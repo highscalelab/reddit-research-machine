@@ -7,7 +7,7 @@ import Loading from './Loading';
 import MarkdownRenderer from './MarkdownRenderer';
 
 const WEBHOOKS = {
-  highscalelab: "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
+  test: "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
   aiagents: "https://lab.aiagents.menu/webhook/88b52e1f-64bb-4148-95e3-6cae9dfc2aab"
 };
 
@@ -16,7 +16,7 @@ const ResearchForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<string[]>([]);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  const [selectedWebhook, setSelectedWebhook] = useState<keyof typeof WEBHOOKS>("highscalelab");
+  const [selectedWebhook, setSelectedWebhook] = useState<keyof typeof WEBHOOKS>("test");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,11 +99,11 @@ const ResearchForm: React.FC = () => {
                 <input
                   type="radio"
                   name="webhook"
-                  checked={selectedWebhook === "highscalelab"}
-                  onChange={() => setSelectedWebhook("highscalelab")}
+                  checked={selectedWebhook === "test"}
+                  onChange={() => setSelectedWebhook("test")}
                   className="text-reddit"
                 />
-                <span>HighScaleLab</span>
+                <span>Test</span>
               </label>
               <label className="flex items-center space-x-1 cursor-pointer">
                 <input
@@ -113,7 +113,7 @@ const ResearchForm: React.FC = () => {
                   onChange={() => setSelectedWebhook("aiagents")}
                   className="text-reddit"
                 />
-                <span>AI Agents</span>
+                <span>AIagents.menu</span>
               </label>
             </div>
           </div>
