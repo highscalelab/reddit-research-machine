@@ -12,6 +12,7 @@ const ResearchForm: React.FC = () => {
   const [topic, setTopic] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<string[]>([]);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +23,12 @@ const ResearchForm: React.FC = () => {
     }
 
     setIsLoading(true);
+    setErrorDetails(null);
     
     try {
+      console.log("Sending request to webhook:", WEBHOOK_URL);
+      console.log("Request payload:", { topic });
+      
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {
@@ -32,15 +37,27 @@ const ResearchForm: React.FC = () => {
         body: JSON.stringify({ topic }),
       });
       
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
       }
       
       const data = await response.text();
+      console.log("Response data received, length:", data.length);
+      
+      if (!data || data.trim() === '') {
+        throw new Error("Received empty response from the server");
+      }
+      
       setResults(prev => [data, ...prev]);
       toast.success("Research completed successfully!");
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error details:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setErrorDetails(errorMessage);
       toast.error("Failed to complete research. Please try again.");
     } finally {
       setIsLoading(false);
@@ -70,6 +87,14 @@ const ResearchForm: React.FC = () => {
       </form>
 
       {isLoading && <Loading />}
+      
+      {errorDetails && (
+        <div className="mb-6 p-4 border border-red-300 bg-red-50 rounded-md text-red-700">
+          <h3 className="font-semibold mb-1">Error Details:</h3>
+          <p className="text-sm whitespace-pre-wrap">{errorDetails}</p>
+          <p className="mt-2 text-sm">Try checking your network connection or contact the n8n administrator if the problem persists.</p>
+        </div>
+      )}
 
       <div className="space-y-6">
         {results.map((result, index) => (

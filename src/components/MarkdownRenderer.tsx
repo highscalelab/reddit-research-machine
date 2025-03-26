@@ -10,7 +10,7 @@ interface MarkdownRendererProps {
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className }) => {
   return (
-    <div className={cn("markdown-content prose prose-neutral dark:prose-invert max-w-none", className)}>
+    <div className={cn("markdown-content prose prose-neutral dark:prose-invert max-w-none p-6 bg-white rounded-lg shadow-sm border border-gray-100", className)}>
       <ReactMarkdown>
         {content}
       </ReactMarkdown>
