@@ -8,7 +8,8 @@ import MarkdownRenderer from './MarkdownRenderer';
 
 const WEBHOOKS = {
   test: "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
-  aiagents: "https://lab.aiagents.menu/webhook/88b52e1f-64bb-4148-95e3-6cae9dfc2aab"
+  aiagents: "https://lab.aiagents.menu/webhook/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
+  aiagentsTest: "https://lab.aiagents.menu/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab"
 };
 
 const ResearchForm: React.FC = () => {
@@ -114,6 +115,16 @@ const ResearchForm: React.FC = () => {
                   className="text-reddit"
                 />
                 <span>AIagents.menu</span>
+              </label>
+              <label className="flex items-center space-x-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="webhook"
+                  checked={selectedWebhook === "aiagentsTest"}
+                  onChange={() => setSelectedWebhook("aiagentsTest")}
+                  className="text-reddit"
+                />
+                <span>AIagents.menu test</span>
               </label>
             </div>
           </div>
