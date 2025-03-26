@@ -6,13 +6,17 @@ import { toast } from "sonner";
 import Loading from './Loading';
 import MarkdownRenderer from './MarkdownRenderer';
 
-const WEBHOOK_URL = "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab";
+const WEBHOOKS = {
+  highscalelab: "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
+  aiagents: "https://lab.aiagents.menu/webhook/88b52e1f-64bb-4148-95e3-6cae9dfc2aab"
+};
 
 const ResearchForm: React.FC = () => {
   const [topic, setTopic] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<string[]>([]);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [selectedWebhook, setSelectedWebhook] = useState<keyof typeof WEBHOOKS>("highscalelab");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,11 +29,13 @@ const ResearchForm: React.FC = () => {
     setIsLoading(true);
     setErrorDetails(null);
     
+    const webhookUrl = WEBHOOKS[selectedWebhook];
+    
     try {
-      console.log("Sending request to webhook:", WEBHOOK_URL);
+      console.log(`Sending request to webhook (${selectedWebhook}):`, webhookUrl);
       console.log("Request payload:", { topic });
       
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,22 +73,50 @@ const ResearchForm: React.FC = () => {
   return (
     <div className="w-full max-w-3xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Input
-            type="text"
-            placeholder="Enter a research topic..."
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            className="flex-grow text-base transition-all duration-200 focus-visible:ring-reddit border-reddit/20 focus-visible:border-reddit/40"
-            disabled={isLoading}
-          />
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-            className="bg-reddit hover:bg-reddit-dark text-white transition-colors duration-300"
-          >
-            Research
-          </Button>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Input
+              type="text"
+              placeholder="Enter a research topic..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="flex-grow text-base transition-all duration-200 focus-visible:ring-reddit border-reddit/20 focus-visible:border-reddit/40"
+              disabled={isLoading}
+            />
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="bg-reddit hover:bg-reddit-dark text-white transition-colors duration-300"
+            >
+              Research
+            </Button>
+          </div>
+          
+          <div className="flex justify-end">
+            <div className="flex items-center space-x-3 text-sm">
+              <span className="text-gray-600">Source:</span>
+              <label className="flex items-center space-x-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="webhook"
+                  checked={selectedWebhook === "highscalelab"}
+                  onChange={() => setSelectedWebhook("highscalelab")}
+                  className="text-reddit"
+                />
+                <span>HighScaleLab</span>
+              </label>
+              <label className="flex items-center space-x-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="webhook"
+                  checked={selectedWebhook === "aiagents"}
+                  onChange={() => setSelectedWebhook("aiagents")}
+                  className="text-reddit"
+                />
+                <span>AI Agents</span>
+              </label>
+            </div>
+          </div>
         </div>
       </form>
 
