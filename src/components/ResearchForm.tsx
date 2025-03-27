@@ -3,8 +3,12 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 import Loading from './Loading';
 import MarkdownRenderer from './MarkdownRenderer';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const WEBHOOKS = {
   test: "https://automations.highscalelab.com/webhook-test/88b52e1f-64bb-4148-95e3-6cae9dfc2aab",
@@ -73,60 +77,49 @@ const ResearchForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-        <div className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="space-y-6 mb-10">
+        <div className="flex flex-col gap-4 p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100 shadow-sm">
           <div className="flex flex-col sm:flex-row gap-3">
-            <Input
-              type="text"
-              placeholder="Enter a research topic..."
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              className="flex-grow text-base transition-all duration-200 focus-visible:ring-reddit border-reddit/20 focus-visible:border-reddit/40"
-              disabled={isLoading}
-            />
+            <div className="relative flex-grow">
+              <Input
+                type="text"
+                placeholder="Enter a research topic..."
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="pl-4 pr-10 py-3 h-12 text-base md:text-lg transition-all duration-200 focus-visible:ring-reddit border-reddit/20 focus-visible:border-reddit/40 shadow-sm"
+                disabled={isLoading}
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
+            </div>
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-reddit hover:bg-reddit-dark text-white transition-colors duration-300"
+              className="h-12 px-6 bg-reddit hover:bg-reddit-dark text-white font-medium text-base transition-all duration-300 shadow-md hover:shadow-lg"
             >
               Research
             </Button>
           </div>
           
-          <div className="flex justify-end">
-            <div className="flex items-center space-x-3 text-sm">
-              <span className="text-gray-600">Source:</span>
-              <label className="flex items-center space-x-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="webhook"
-                  checked={selectedWebhook === "test"}
-                  onChange={() => setSelectedWebhook("test")}
-                  className="text-reddit"
-                />
-                <span>Test</span>
-              </label>
-              <label className="flex items-center space-x-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="webhook"
-                  checked={selectedWebhook === "aiagents"}
-                  onChange={() => setSelectedWebhook("aiagents")}
-                  className="text-reddit"
-                />
-                <span>AIagents.menu</span>
-              </label>
-              <label className="flex items-center space-x-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="webhook"
-                  checked={selectedWebhook === "aiagentsTest"}
-                  onChange={() => setSelectedWebhook("aiagentsTest")}
-                  className="text-reddit"
-                />
-                <span>AIagents.menu test</span>
-              </label>
-            </div>
+          <div className="mt-2">
+            <p className="text-sm text-gray-600 mb-2">Source:</p>
+            <RadioGroup 
+              value={selectedWebhook} 
+              onValueChange={(value) => setSelectedWebhook(value as keyof typeof WEBHOOKS)}
+              className="flex flex-wrap gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="test" id="test" className="text-reddit" />
+                <Label htmlFor="test" className="text-sm cursor-pointer">Test</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="aiagents" id="aiagents" className="text-reddit" />
+                <Label htmlFor="aiagents" className="text-sm cursor-pointer">AIagents.menu</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="aiagentsTest" id="aiagentsTest" className="text-reddit" />
+                <Label htmlFor="aiagentsTest" className="text-sm cursor-pointer">AIagents.menu test</Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
       </form>
@@ -134,14 +127,16 @@ const ResearchForm: React.FC = () => {
       {isLoading && <Loading />}
       
       {errorDetails && (
-        <div className="mb-6 p-4 border border-red-300 bg-red-50 rounded-md text-red-700">
-          <h3 className="font-semibold mb-1">Error Details:</h3>
-          <p className="text-sm whitespace-pre-wrap">{errorDetails}</p>
-          <p className="mt-2 text-sm">Try checking your network connection or contact the n8n administrator if the problem persists.</p>
-        </div>
+        <Alert variant="destructive" className="mb-8 animate-fade-in">
+          <AlertTitle className="text-base font-semibold">Research Error</AlertTitle>
+          <AlertDescription className="mt-2">
+            <p className="text-sm whitespace-pre-wrap">{errorDetails}</p>
+            <p className="mt-2 text-sm">Try checking your network connection or contact the administrator if the problem persists.</p>
+          </AlertDescription>
+        </Alert>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {results.map((result, index) => (
           <div 
             key={index} 
